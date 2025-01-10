@@ -4,30 +4,30 @@ This directory contains the dotfiles for my system
 
 ## Requirements
 
-Ensure you have the following install on your system
+Ensure you have the following installed on your system
 
 ### Git
 
-'''
-sudo apt install git
-'''
+```
+$ sudo apt install git
+```
 
 ### Stow
-'''
-sudo apt install stow
-'''
+```
+$ sudo apt install stow
+```
 
 ## Installation
 
-First, check out the dotfiles repo in your $HOME (~) directory using git.
+First, clone the dotfiles repo in your $HOME (~) directory using git.
 
-'''
+```
 $ git clone https://github.com/Jacoli1023/dotfiles.git
 $ cd dotfiles
-'''
+```
 
-then use GNU stow to create symlinks
+then use GNU stow to create symlinks.
 
-'''
+```
 $ stow .
-'''
+```
