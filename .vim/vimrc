@@ -1,0 +1,281 @@
+" Disable vi compatibility
+set nocompatible
+
+" TODO: Look into some more helpful plugins
+" PLUGINS ------------------------------------------------------ {{{
+
+call plug#begin('~/.vim/plugged')
+
+    " Search plugins -> vim-cool, incsearch
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    Plug 'junegunn/fzf.vim'
+
+    " Movement -> easymotion
+
+    " Text manip -> commentary, easy-align, argwrap, sensible, surround
+
+    " GUI enhancements -> Gundo, gutters?, tmux
+    Plug 'dense-analysis/ale'
+    Plug 'itchyny/lightline.vim'
+    Plug 'maximbaz/lightline-ale'
+    Plug 'preservim/nerdtree'
+
+    " Syntax/language support -> markdown, JSON, python
+
+    " Colorschemes
+    Plug 'morhetz/gruvbox'
+
+    " Writing -> goyo, limelight
+
+call plug#end()
+
+" }}}
+
+" EDITOR SETTINGS ------------------------------------------------------ {{{
+
+" --- Colorscheme ---
+" Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
+" If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
+if (empty($TMUX) && getenv('TERM_PROGRAM') != 'Apple_Terminal')
+  if (has("nvim"))
+    "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+  endif
+  "For Neovim > 0.1.5 and Vim > patch 7.4.1799
+  if (has("termguicolors"))
+    set termguicolors
+  endif
+endif
+
+set background=dark
+autocmd vimenter * ++nested colorscheme gruvbox
+
+" Lightline colorscheme configuration
+let g:lightline = {
+            \ 'colorscheme': 'apprentice',
+            \ }
+
+" Enable syntax processing/highlighting
+syntax on
+
+" --- Spaces and tabs ---
+set tabstop=4       " Number of visual spaces per tab
+set shiftwidth=4    " Insert 4 spaces on a tab
+set softtabstop=4   " Number of spaces in a tab when editing
+set expandtab		" Use spaces (set to 4, above) instead of tabs.
+set smarttab		" Let's tab key insert 'tab stops', bksp deletes tabs.
+set shiftround		" Tab/shifting moves to closest tabstop
+set autoindent		" Minimal automatic indenting for any filetype
+set smartindent		" Indents/Dedents newlines based on rules (like C).
+
+" --- UI Config ---
+set shortmess+=I    	" Disables startup message
+set number              " show line numbers
+set relativenumber      " show relative numbering
+set noshowmode          " no need for this when we have lightline
+set cursorline          " highlight current line
+filetype indent on      " load filetype-specific indent files
+filetype plugin on      " load filetype specific plugin files
+set wildmenu            " visual autocomplete for command menu
+set wildmode=list:longest	"Lets wildmenu behave similar to Bash completion
+set wildignore+=*/.git/*,*/tmp/*,*.swp
+set showmatch           " highlight matching [{()}]
+set laststatus=2        " Show the status line at the bottom
+set mouse+=a            " A necessary evil, mouse support
+set noerrorbells visualbell t_vb=    "Disable annoying error noises
+set splitbelow          " Open new vertical split bottom
+set splitright          " Open new horizontal splits right
+set linebreak           " Have lines wrap instead of continue off-screen
+set breakindent         " After linebreak, visually indents the line
+set scrolloff=5         " Keep cursor in approximately the middle of the screen
+set updatetime=100      " Some plugins require fast updatetime
+set history=1000    	" Extends command history
+
+" --- Intuitive behavior ---
+runtime macros/matchit.vim      " Hit '%' on 'if' to jump to 'else'
+set matchpairs+=<:>             " Adding matching <> to pairs list
+set backspace=indent,eol,start	" Intuitive backspace behavior
+
+" --- Buffers and files ---
+" No backups, use VCS instead
+set hidden		    " Allows having more than one unsaved buffer
+set autoread		" Loads file automatically when it has been changed outside of vim
+set undofile " Maintain undo histroy between sessions
+set undodir=~/.vim/backup
+
+" --- Searching ---
+set ignorecase		" Case insensitive search
+set smartcase		" Search becomes case sensitive in the presence of uppercase letters
+set incsearch		" Live incremental search
+set hlsearch		" Highlights search matches
+
+" --- Folding ---
+" Use the marker method of folding
+augroup filetype_vim
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
+augroup END
+
+" }}}
+
+" CUSTOM FUNCTIONS --------------------------------------------- {{{
+
+function! ToggleALEFix()
+    if(g:ale_fix_on_save == 1)
+        let g:ale_fix_on_save = 0
+    else
+        let g:ale_fix_on_save = 1
+    endif
+endfunc
+
+command! ALEFixToggle call ToggleALEFix()
+
+" }}}
+
+" MAPPINGS ----------------------------------------------------- {{{
+
+" Set leader key to space
+nnoremap <SPACE> <Nop>
+let mapleader=" "
+
+" --- Movement ---
+" Navigate split views easier
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+
+" Resize split windows with arrow keys
+noremap <C-up> <C-w>+
+noremap <C-down> <C-w>-
+noremap <C-left> <C-w>>
+noremap <C-right> <C-w><
+
+" Move to beggining/end of line without leaving home row
+map H ^
+map L $
+
+" Visual line nav, allows navigating wrapped lines
+nnoremap j gj
+nnoremap k gk
+
+" --- Buffers and saving ---
+" For quickly switching between buffers and cycling through them.
+nnoremap <leader><leader> :ls<CR>:b<space>
+nnoremap <leader>a :buffer#<CR>
+nnoremap <leader>z :bprevious<CR>
+nnoremap <leader>x :bnext<CR>
+
+" Easier saving, quiting, and save-quitting
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>wq :wq<CR>
+nnoremap <leader>Q :q!<CR>
+
+" --- Toggleable settings ---
+" Easy toggleable settings like hlsearch, spell, and paste with <leader>o<key>
+let settings = {
+            \ 'cc': 'cursorcolumn',
+            \ 'cl': 'cursorline',
+            \ 'h': 'hlsearch',
+            \ 'n': 'number',
+            \ 'p': 'paste',
+            \ 'r': 'relativenumber',
+            \ 's': 'spell',
+            \ 'w': 'wrap',
+            \ }
+
+for [key,val] in items(settings)
+    exec printf("nnoremap <silent> <leader>o%s :<C-U>set inv%s<CR>", key, val)
+endfor
+
+" --- Plugin mappings ---
+" FZF
+map <C-p> :Files<CR>
+map <C-h> :History<CR>
+nmap <leader>; :Buffers<CR>
+nnoremap <leader>g :Rg<CR>
+" ALE
+nnoremap <leader>oa :ALEToggle<CR>
+nnoremap <leader>of :ALEFixToggle<CR>
+" NERDTree
+nnoremap <leader>oe :NERDTreeToggle<CR>
+
+" --- Insert mappings ---
+" Insert line above cursor in insert mode and move to it
+inoremap <silent><C-o> <esc>O
+
+" When using <CTRL-U>, <CTRL-W> or <Enter> in Insert-mode, do <CTRL-G>u
+" first to start a new change so that I can undo these operations with
+" u in Normal/Command mode, rather than undoing the entire Insert
+" operation at once.
+inoremap <C-U> <C-G>u<C-U>
+inoremap <C-W> <C-G>u<C-W>
+inoremap <C-J> <C-G>u<C-J>
+inoremap <NL> <C-G>u<NL>
+inoremap <C-M> <C-G>u<C-M>
+inoremap <CR> <C-G>u<CR>
+
+" }}}
+
+" PLUGIN CONFIGURATION -------------------------------------------- {{{
+
+" --- ALE ---
+let g:ale_enabled = 0
+" Quick startup
+let g:ale_lint_on_enter = 0
+let g:ale_lint_on_save = 1
+let g:ale_fix_on_save = 1
+let g:ale_fixers = {
+            \ '*': ['remove_trailing_lines', 'trim_whitespace'],
+            \ }
+
+" --- Lightline + ALE ---
+let g:lightline = {
+            \ 'colorscheme': 'apprentice',
+            \ }
+
+let g:lightline.component_expand = {
+      \  'linter_checking': 'lightline#ale#checking',
+      \  'linter_infos': 'lightline#ale#infos',
+      \  'linter_warnings': 'lightline#ale#warnings',
+      \  'linter_errors': 'lightline#ale#errors',
+      \  'linter_ok': 'lightline#ale#ok',
+      \ }
+
+let g:lightline.component_type = {
+      \     'linter_checking': 'right',
+      \     'linter_infos': 'right',
+      \     'linter_warnings': 'warning',
+      \     'linter_errors': 'error',
+      \     'linter_ok': 'right',
+      \ }
+
+let g:lightline.active = {
+            \ 'right': [ [ 'linter_checking', 'linter_errors','linter_warnings', 'linter_infos', 'linter_ok' ],
+            \            [ 'lineinfo' ],
+            \            [ 'percent' ],
+            \            [ 'fileformat', 'fileencoding', 'filetype'] ] }
+
+" --- NERDTree ---
+" Close the tab if NERDTree is the only window remaining in it.
+autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | call feedkeys(":quit\<CR>:\<BS>") | endif
+
+
+" }}}
+
+" AUTOCOMMANDS ---------------------------------------------------- {{{
+
+" Highlight current line, only in active window
+augroup CursorLineOnlyInActiveWindow
+    autocmd!
+    autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+    autocmd WinLeave * setlocal nocursorline
+augroup END
+
+" Jump to last edit position on opening file
+if has("autocmd")
+    au BufReadPost * if expand('%:p') !~# '\m/\.git/' && line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+
+" }}}
