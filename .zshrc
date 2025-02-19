@@ -1,6 +1,9 @@
 # Export local bin to PATH
 export PATH=$PATH:$HOME/bin:$HOME/.local/bin
 
+# Vim as default editor
+export EDITOR=vim
+
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -59,6 +62,8 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+
+# Plugin configuration
 zstyle ':omz:plugins:alias-finder' autoload yes
 zstyle ':omz:plugins:alias-finder' longer yes
 zstyle ':omz:plugins:alias-finder' exact yes
