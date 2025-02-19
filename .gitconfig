@@ -1,0 +1,17 @@
+[user]
+	email = jacoli1023@gmail.com
+	name = Jacob Oliver
+[init]
+	defaultBranch = main
+[core]
+	editor = vim
+[pull]
+    ff = only
+[push]
+    default = simple
+[alias]
+	last = log -1 HEAD
+    lg = log --oneline
+	graph = log --all --graph --decorate --oneline
+[merge]
+	tool = vimdiff
