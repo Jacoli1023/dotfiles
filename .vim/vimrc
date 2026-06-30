@@ -43,9 +43,9 @@ set background=dark
 syntax on
 
 " --- Spaces and tabs ---
-set tabstop=4       " Number of visual spaces per tab
+set tabstop=8       " Number of visual spaces per tab
 set shiftwidth=4    " Insert 4 spaces on a tab
-set softtabstop=4   " Number of spaces in a tab when editing
+set softtabstop=0   " Number of spaces in a tab when editing
 set expandtab		" Use spaces (set to 4, above) instead of tabs.
 set smarttab		" Let's tab key insert 'tab stops', bksp deletes tabs.
 set shiftround		" Tab/shifting moves to closest tabstop
